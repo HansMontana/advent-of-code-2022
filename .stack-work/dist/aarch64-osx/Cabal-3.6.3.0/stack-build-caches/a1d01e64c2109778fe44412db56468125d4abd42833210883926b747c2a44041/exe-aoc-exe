@@ -1,0 +1,16 @@
+? /Users/michael.cyruk@sportalliance.com/.stack/programs/aarch64-osx/ghc-9.2.5/lib/ghc-9.2.5/lib/aarch64-osx-ghc-9.2.5/rts-1.0.2/include/ghcversion.h
+: hash: 0b01480d9e386cfc01bf5430e953ac8a8bb8de1a8e65ea4d8e19bce3c3718005
+? /Users/michael.cyruk@sportalliance.com/aoc/advent-of-code-2022/.stack-work/dist/aarch64-osx/Cabal-3.6.3.0/build/aoc-exe/autogen/Paths_aoc.hs
+: hash: f28018705854a33cfe2bd3f4e7c195287776b2dbff06bcdd1af187e14e8c16fd
+? /Users/michael.cyruk@sportalliance.com/aoc/advent-of-code-2022/.stack-work/dist/aarch64-osx/Cabal-3.6.3.0/build/aoc-exe/autogen/cabal_macros.h
+: hash: 17648414d6763a994f56a10fa6b1c0b9fd6d0c1c54f0f915f44ac38ab5bc6015
+/Users/michael.cyruk@sportalliance.com/aoc/advent-of-code-2022/CHANGELOG.md:
+  hash: 34ec0092532da03e29425014b8d582daf790cb0363594e574cd0980a835c0649
+/Users/michael.cyruk@sportalliance.com/aoc/advent-of-code-2022/README.md:
+  hash: 152e229df8806ad20f9239ad4bb46bd0cd9eab4725f253fe0a8f35cbb2a2d0a3
+/Users/michael.cyruk@sportalliance.com/aoc/advent-of-code-2022/aoc.cabal:
+  hash: 19761191460543018eb8f3e58e9507131ecd9d885d75effc1cc6709cd4824ee4
+/Users/michael.cyruk@sportalliance.com/aoc/advent-of-code-2022/app/Main.hs:
+  hash: 2e27b394a7502c3a18d9751b223f69325664e1964de3ec3cf3b1a303ea7a007d
+/Users/michael.cyruk@sportalliance.com/aoc/advent-of-code-2022/package.yaml:
+  hash: 1178892fbe3b75d008df7c4beb5f48bf224b6b663f0f7e02dd5d2be2f9794bde
