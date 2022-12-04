@@ -3,8 +3,9 @@ module Aoc2204 (aoc2204) where
 import Lib
 import qualified Data.List.Split as Split
 import qualified Data.List as List
-import qualified Data.Char as Char
+import qualified Data.Bifunctor as Bifunctor
 
+-- Warning: pattern matching in this exercise is not always exhaustive.
 -- Part a
 
 -- translate further
@@ -14,7 +15,7 @@ mapToInt :: (String, String) -> (Int, Int)
 mapToInt (x, y) = (readInt x, readInt y)
 
 mapToIntPairList :: [((String, String),(String , String))] -> [((Int, Int),(Int , Int))]
-mapToIntPairList = map (\(x, y) -> (mapToInt x, mapToInt y))
+mapToIntPairList = map $ Bifunctor.bimap mapToInt mapToInt
 
 toRange :: (Int, Int) -> [Int]
 toRange (x,y) = [x..y]
@@ -33,22 +34,24 @@ containsfully xs ys = let lenX = length xs
                           lenI = length $ xs `List.intersect` ys
                       in lenX == lenI || lenY == lenI
 
--- to do read up on tuples and (un)curry
+-- TODO read up on tuples and (un)curry
 pairContainsFully :: ([Int], [Int]) -> Bool
 pairContainsFully (x, y) = containsfully x y
 
-solve ls = sum $ map (\b -> if b then 1 else 0) $ map pairContainsFully ls
+solve :: [([Int],[Int])] -> Int
+solve = sum . map ((\b -> if b then 1 else 0) . pairContainsFully)
 
 -- part b
 
 intersects :: [Int] -> [Int] -> Bool
-intersects xs ys = (length $ xs `List.intersect` ys) /= 0
+intersects xs ys = not $ null $ xs `List.intersect` ys
 
 -- to do read up on tuples and (un)curry
 pairIntersects :: ([Int], [Int]) -> Bool
 pairIntersects (x, y) = intersects x y
 
-solve2 ls = sum $ map (\b -> if b then 1 else 0) $ map pairIntersects ls
+solve2 :: [([Int],[Int])] -> Int
+solve2 = sum . map ((\ b -> if b then 1 else 0) . pairIntersects)
 
 aoc2204 :: IO ()
 aoc2204 = do 
@@ -61,7 +64,7 @@ aoc2204 = do
 
 
 readInput :: String -> [((String, String),(String , String))]
-readInput input = map splitTupleIntoPairOfPairs $ map (splitIntoPairs ",") $ splitIntoLines input
+readInput input = map (splitTupleIntoPairOfPairs . splitIntoPairs ",") (splitIntoLines input)
 
 splitIntoPairs :: String  -> String -> (String, String)
 splitIntoPairs d s = let [x, y] = take 2 $ Split.splitOn d s
@@ -69,4 +72,3 @@ splitIntoPairs d s = let [x, y] = take 2 $ Split.splitOn d s
 
 splitTupleIntoPairOfPairs :: (String, String) -> ((String, String),(String, String))
 splitTupleIntoPairOfPairs (x, y) = (splitIntoPairs "-" x, splitIntoPairs "-" y)
-
