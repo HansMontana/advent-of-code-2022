@@ -4,14 +4,12 @@ import Lib
 import qualified Data.List as List
 import qualified Data.Bifunctor as Bifunctor
 
--- Warning: pattern matching in this exercise is not always exhaustive.
 -- Part a
 
 -- translate further
 
--- to find out: map for tuples 
 mapToInt :: (String, String) -> (Int, Int)
-mapToInt (x, y) = (readInt x, readInt y)
+mapToInt = mapTuple readInt
 
 mapToIntPairList :: [((String, String),(String , String))] -> [((Int, Int),(Int , Int))]
 mapToIntPairList = map $ Bifunctor.bimap mapToInt mapToInt
@@ -20,7 +18,7 @@ toRange :: (Int, Int) -> [Int]
 toRange (x,y) = [x..y]
 
 toRangePair :: ((Int,Int),(Int,Int)) -> ([Int],[Int])
-toRangePair (x,y) = (toRange x,toRange y)
+toRangePair = mapTuple toRange
 
 translate :: [((String, String),(String , String))] -> [([Int],[Int])]
 translate ls = map toRangePair $ mapToIntPairList ls
@@ -33,9 +31,8 @@ containsfully xs ys = let lenX = length xs
                           lenI = length $ xs `List.intersect` ys
                       in lenX == lenI || lenY == lenI
 
--- TODO read up on tuples and (un)curry
 pairContainsFully :: ([Int], [Int]) -> Bool
-pairContainsFully (x, y) = containsfully x y
+pairContainsFully = uncurry containsfully
 
 solve :: [([Int],[Int])] -> Int
 solve = sum . map ((\b -> if b then 1 else 0) . pairContainsFully)
@@ -45,9 +42,8 @@ solve = sum . map ((\b -> if b then 1 else 0) . pairContainsFully)
 intersects :: [Int] -> [Int] -> Bool
 intersects xs ys = not $ null $ xs `List.intersect` ys
 
--- to do read up on tuples and (un)curry
 pairIntersects :: ([Int], [Int]) -> Bool
-pairIntersects (x, y) = intersects x y
+pairIntersects = uncurry intersects
 
 solve2 :: [([Int],[Int])] -> Int
 solve2 = sum . map ((\ b -> if b then 1 else 0) . pairIntersects)

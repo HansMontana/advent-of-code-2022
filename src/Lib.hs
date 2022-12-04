@@ -9,7 +9,8 @@ module Lib (
     toTuple,
     toTuplesOfTuples,
     splitIntoPairs,
-    splitTupleIntoPairOfPairs
+    splitTupleIntoPairOfPairs,
+    mapTuple
     ) where
 
 import qualified Data.List.Split as Split
@@ -56,3 +57,6 @@ splitIntoPairs delimiter s = let [x, y] = take 2 $ Split.splitOn delimiter s
 
 splitTupleIntoPairOfPairs :: (String, String) -> ((String, String),(String, String))
 splitTupleIntoPairOfPairs (x, y) = (splitIntoPairs "-" x, splitIntoPairs "-" y)
+
+mapTuple:: (a -> b) -> (a, a) -> (b, b)
+mapTuple f (x, y) = (f x, f y)
