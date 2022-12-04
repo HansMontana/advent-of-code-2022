@@ -37,7 +37,8 @@ library:
   source-dirs: src
   dependencies:
   - split
-  - timeit 
+  - timeit
+  - extra
 
 executables:
   aoc-exe:

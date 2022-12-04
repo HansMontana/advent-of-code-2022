@@ -30,6 +30,7 @@ library
       Aoc2202
       Aoc2203
       Aoc2204
+      Aoc2205
       Lib
   other-modules:
       Paths_aoc
@@ -38,6 +39,7 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , extra
     , split
     , timeit
   default-language: Haskell2010

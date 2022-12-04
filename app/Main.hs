@@ -5,7 +5,8 @@ import System.TimeIt
 -- import Aoc2201
 -- import Aoc2202
 -- import Aoc2203
-import Aoc2204
+-- import Aoc2204
+import Aoc2205
 
 main :: IO ()
 main = do
@@ -15,5 +16,6 @@ main = do
 --            aoc2201
 --            aoc2202
 --            aoc2203
-            aoc2204
+--            aoc2204
+            aoc2205
         putStrLn "\n>>> END <<<"
