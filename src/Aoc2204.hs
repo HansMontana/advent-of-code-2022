@@ -1,7 +1,6 @@
 module Aoc2204 (aoc2204) where
 
 import Lib
-import qualified Data.List.Split as Split
 import qualified Data.List as List
 import qualified Data.Bifunctor as Bifunctor
 
@@ -55,20 +54,9 @@ solve2 = sum . map ((\ b -> if b then 1 else 0) . pairIntersects)
 
 aoc2204 :: IO ()
 aoc2204 = do 
-    --input <- readFile "./resources/input4test"
+    -- input <- readFile "./resources/input4test"
     input <- readFile "./resources/input4real"
     -- part a
-    print $ solve $ translate $ readInput input
+    print $ solve $ translate $ toTuplesOfTuples input
     -- part b
-    print $ solve2 $ translate $ readInput input
-
-
-readInput :: String -> [((String, String),(String , String))]
-readInput input = map (splitTupleIntoPairOfPairs . splitIntoPairs ",") (splitIntoLines input)
-
-splitIntoPairs :: String  -> String -> (String, String)
-splitIntoPairs d s = let [x, y] = take 2 $ Split.splitOn d s
-                   in (x,y)
-
-splitTupleIntoPairOfPairs :: (String, String) -> ((String, String),(String, String))
-splitTupleIntoPairOfPairs (x, y) = (splitIntoPairs "-" x, splitIntoPairs "-" y)
+    print $ solve2 $ translate $ toTuplesOfTuples input

@@ -1,4 +1,5 @@
-module Lib ( 
+module Lib (
+    readInt,
     splitIntoInts,
     splitIntoLines,
     splitIntoBlocks,
@@ -6,11 +7,14 @@ module Lib (
     splitIntoWords,
     toTuples,
     toTuple,
-    readInt
+    toTuplesOfTuples,
+    splitIntoPairs,
+    splitTupleIntoPairOfPairs
     ) where
 
 import qualified Data.List.Split as Split
 
+-- Warning: pattern matching in this lib is not always exhaustive.
 -- day 1
 
 splitIntoInts :: String -> [Int]
@@ -35,8 +39,20 @@ splitIntoWords = Split.splitOn " "
 
 toTuple::[String] -> (String,String)
 toTuple [] = ("","")
-toTuple [a] = ("","")
+toTuple [_] = ("","")
 toTuple (a:b:_) = (a,b)
 
 toTuples :: String -> [(String, String)]
 toTuples s = map (toTuple . splitIntoWords) $ splitIntoLines s
+
+-- day 4
+
+toTuplesOfTuples :: String -> [((String, String),(String , String))]
+toTuplesOfTuples input = map (splitTupleIntoPairOfPairs . splitIntoPairs ",") (splitIntoLines input)
+
+splitIntoPairs :: String  -> String -> (String, String)
+splitIntoPairs delimiter s = let [x, y] = take 2 $ Split.splitOn delimiter s
+                             in (x,y)
+
+splitTupleIntoPairOfPairs :: (String, String) -> ((String, String),(String, String))
+splitTupleIntoPairOfPairs (x, y) = (splitIntoPairs "-" x, splitIntoPairs "-" y)
