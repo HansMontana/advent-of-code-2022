@@ -37,6 +37,3 @@ aoc2203 = do
     print $ sum $ map (toPriority . inBoth . toCompartment) $ splitIntoLines input
     -- part b
     print $ sum $ map (toPriority . inThreeoth) $ toGroups $ splitIntoLines input
-
-
-

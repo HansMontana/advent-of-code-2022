@@ -1,2 +1,4 @@
 .stack-work/**
+.idea/**
 .DS_Store
+advent-of-code-2022.iml
