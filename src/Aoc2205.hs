@@ -6,21 +6,29 @@ import qualified Data.Bifunctor as Bifunctor
 import qualified Data.Char as Char
 import qualified Data.List.Split as Split
 
--- Part a
+-- Part a and b
 
-solve :: ([String], [[Int]]) -> String
-solve game = let endState = play game 
-             in  map head endState
+-- crate order function for part a
+reverseCrates :: String -> String 
+reverseCrates = List.reverse
+
+-- crate order function for part b
+letCratesBe:: String -> String 
+letCratesBe = id
+
+solve :: (String -> String) -> ([String], [[Int]]) -> String
+solve orderFun game = let endState = play orderFun game 
+                      in  map head endState
 
 -- TODO Learn about state monads at some point in my life.
-play :: ([String], [[Int]]) -> [String]
-play (state, []) = state
-play (state, moves) = let newState = executeAMove state (head moves)
-                      in play (newState, tail moves)
+play :: (String -> String) -> ([String], [[Int]]) -> [String]
+play orderFun (state, [])    = state
+play orderFun (state, moves) = let newState = executeAMove orderFun state (head moves)
+                               in play orderFun (newState, tail moves)
 
-executeAMove :: [String] -> [Int] -> [String]
-executeAMove state move = let result = removeFromStack state move
-                          in addToStack result move
+executeAMove :: (String -> String) -> [String] -> [Int] -> [String]
+executeAMove orderFun state move = let result = removeFromStack state move
+                                   in addToStack orderFun result move
 
 removeFromStack :: [String] -> [Int] -> ([String], String)
 removeFromStack board [n, src, _] = let [preStacks, stackList, postStacks] = chooseStack board src
@@ -29,12 +37,12 @@ removeFromStack board [n, src, _] = let [preStacks, stackList, postStacks] = cho
                                         restStack = drop n stack
                                     in (preStacks ++ [restStack] ++ postStacks, crates)
 
-addToStack :: ([String], String) -> [Int] -> [String] 
-addToStack (board, crates) [n, _ , dst] = let [preStacks, stackList, postStacks] = chooseStack board dst
-                                              stack = head stackList
-                                              reversedCrates = List.reverse crates
-                                              moreStack = reversedCrates ++ stack
-                                          in preStacks ++ [moreStack] ++ postStacks
+addToStack :: (String -> String) -> ([String], String) -> [Int] -> [String] 
+addToStack orderFun (board, crates) [n, _ , dst] = let [preStacks, stackList, postStacks] = chooseStack board dst
+                                                       stack = head stackList
+                                                       orderedCrates = orderFun crates
+                                                       moreStack = orderedCrates ++ stack
+                                                   in preStacks ++ [moreStack] ++ postStacks
 
 chooseStack :: [String] -> Int -> [[String]]
 chooseStack ls n = let (xs, ys) = List.splitAt (n - 1) ls
@@ -45,7 +53,9 @@ aoc2205 = do
     -- input <- readFile "./resources/input5test"
     input <- readFile "./resources/input5real"
     -- part a
-    print $ solve $ prepare input
+    print $ solve reverseCrates $ prepare input
+    -- part b
+    print $ solve letCratesBe $ prepare input
 
 prepare :: String -> ([String],[[Int]])
 prepare s = let [b,m] = Split.splitOn "\n\n" s
