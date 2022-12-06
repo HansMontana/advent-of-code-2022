@@ -21,7 +21,7 @@ firstOccurence n ls = let Just pos = List.elemIndex n ls
                       in pos
 
 solve :: Int -> String -> Int
-solve n s = (+) n $ firstOccurence n $ toNumOfDistinctChar $ buildWindows n s
+solve n = (+) n . firstOccurence n . toNumOfDistinctChar . buildWindows n
 
 aoc2206 :: IO ()
 aoc2206 = do 
