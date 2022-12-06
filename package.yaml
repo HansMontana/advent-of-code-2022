@@ -39,6 +39,7 @@ library:
   - split
   - timeit
   - extra
+  - containers
 
 executables:
   aoc-exe:
