@@ -18,14 +18,14 @@ solve :: (String -> String) -> ([String], [[Int]]) -> String
 solve orderFun game = let endState = play orderFun game 
                       in  map head endState
 
--- TODO Learn about state monads at some point in my life.
+-- TODO Learn about res monads at some point in my life.
 play :: (String -> String) -> ([String], [[Int]]) -> [String]
-play _ (state, []) = state
-play orderFun (state, moves) = let newState = executeAMove orderFun state (head moves)
+play _ (res, []) = res
+play orderFun (res, moves) = let newState = executeAMove orderFun res (head moves)
                                in play orderFun (newState, tail moves)
 
 executeAMove :: (String -> String) -> [String] -> [Int] -> [String]
-executeAMove orderFun state move = let result = removeFromStack state move
+executeAMove orderFun res move = let result = removeFromStack res move
                                    in addToStack orderFun result move
 
 -- Warning: Pattern match(es) are non-exhaustive
