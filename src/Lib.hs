@@ -15,7 +15,8 @@ module Lib (
     mapWithIndex,
     printList,
     unique,
-    times
+    times,
+    join
     ) where
 
 import qualified Data.List.Split as Split
@@ -86,3 +87,8 @@ unique = Set.size . Set.fromList
 times :: Int -> (a -> a) -> a -> a 
 times 0 _ x = x
 times n f x = times (n-1) f (f x)  
+
+-- day 7
+
+join :: [a] -> [[a]] -> [a]
+join delimiter = foldr1 (\x y -> x ++ delimiter ++ y)

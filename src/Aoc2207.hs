@@ -43,11 +43,6 @@ aoc2207 = do
     print $ prettyPath $ solveA $ splitIntoLines input
 {-     printList $ foldPreservingInterims (++) ["1", "2", "3", "4", "5"] -}
 
--- To the lib!
-
-join :: [a] -> [[a]] -> [a]
-join delimiter = foldr1 (\x y -> x ++ delimiter ++ y)
-
 -- pretty printers
 prettyPath :: [String] -> String
 prettyPath = join " > " . reverse
