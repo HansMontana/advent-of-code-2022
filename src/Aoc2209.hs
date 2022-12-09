@@ -87,7 +87,7 @@ aoc2209 = do
     -- input <- readFile "./resources/input9test2"
     input <- readFile "./resources/input9real"
     -- part a: 6256, CPU time:   6.94s
-    -- print $ solveA $ toDataStructure $ readInput input
+    print $ solveA $ toDataStructure $ readInput input
     -- part b: 2665,CPU time:  40.71s
     print $ solveB $ toDataStructure $ readInput input  
 
