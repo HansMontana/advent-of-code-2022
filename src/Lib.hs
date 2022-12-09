@@ -13,6 +13,7 @@ module Lib (
     mapTuple,
     flatten,
     mapWithIndex,
+    printList,
     unique,
     times
     ) where
