@@ -34,6 +34,7 @@ library
       Aoc2206
       Aoc2207
       Aoc2208
+      Aoc2209
       Lib
   other-modules:
       Paths_aoc

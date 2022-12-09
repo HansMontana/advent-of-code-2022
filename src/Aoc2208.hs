@@ -3,17 +3,6 @@ module Aoc2208 (aoc2208) where
 import Lib
 import qualified Data.List.Extra as List
 
--- These should go into the library
-
-flatten :: [[a]] -> [a]
-flatten = foldr1 (++)
-
-mapWithIndex :: (a -> Int -> b) -> [a] -> [b]
-mapWithIndex fun = mapWithIndex' fun 0
-    where mapWithIndex' :: (a -> Int -> b) -> Int -> [a] -> [b]
-          mapWithIndex' _ _ [] = []
-          mapWithIndex' f i (x:xs) = f x i : mapWithIndex' f (i + 1) xs
-
 -- Some type aliases and methods for them used in both part a and b.
 
 type Field = [[Int]]
@@ -118,7 +107,7 @@ toIntField = map (map (readInt.(: [])))
 -- Some pretty printing functions (at the moment with unused warning, as they were used for debugging).
 -- Maybe it's time to get into unit testing in haskell.
 
-printField :: Show a => [[a]] -> IO()
+{- printField :: Show a => [[a]] -> IO()
 printField = mapM_ print
 
 printViews :: Show a => ([[a]],[[a]],[[a]],[[a]]) -> IO()
@@ -129,4 +118,4 @@ printViews (l,r,t,b) = do
     putStrLn ""
     printField t
     putStrLn ""
-    printField b
+    printField b -}

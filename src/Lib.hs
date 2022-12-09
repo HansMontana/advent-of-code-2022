@@ -10,10 +10,15 @@ module Lib (
     toTuplesOfTuples,
     splitIntoPairs,
     splitTupleIntoPairOfPairs,
-    mapTuple
+    mapTuple,
+    flatten,
+    mapWithIndex,
+    unique,
+    times
     ) where
 
 import qualified Data.List.Split as Split
+import qualified Data.Set as Set
 
 -- Warning: pattern matching in this lib is not always exhaustive.
 -- day 1
@@ -60,3 +65,23 @@ splitTupleIntoPairOfPairs (x, y) = (splitIntoPairs "-" x, splitIntoPairs "-" y)
 
 mapTuple:: (a -> b) -> (a, a) -> (b, b)
 mapTuple f (x, y) = (f x, f y)
+
+-- day 8
+
+flatten :: [[a]] -> [a]
+flatten = foldr1 (++)
+
+mapWithIndex :: (a -> Int -> b) -> [a] -> [b]
+mapWithIndex f ls = zipWith f ls [0..]
+
+-- day 9
+
+printList :: Show a => [a] -> IO()
+printList = mapM_ print
+
+unique :: Ord a => [a] -> Int
+unique = Set.size . Set.fromList
+
+times :: Int -> (a -> a) -> a -> a 
+times 0 _ x = x
+times n f x = times (n-1) f (f x)  
