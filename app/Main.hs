@@ -8,10 +8,12 @@ import System.TimeIt
 -- import Aoc2204
 -- import Aoc2205
 -- import Aoc2206
-import Aoc2207
+-- import Aoc2207
 -- import Aoc2208
 -- import Aoc2209
 -- import Aoc2210
+-- import Aoc2211A
+import Aoc2211B
 
 main :: IO ()
 main = do
@@ -24,8 +26,10 @@ main = do
 --            aoc2204
 --            aoc2205
 --            aoc2206
-            aoc2207
+--            aoc2207
 --            aoc2208
 --            aoc2209
 --            aoc2210
+--            aoc2211a
+            aoc2211b
         putStrLn "\n>>> END <<<"

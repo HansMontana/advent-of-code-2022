@@ -19,7 +19,9 @@ module Lib (
     join,
     foldlList,
     foldl1List,
-    insertWithList
+    insertWithList,
+    readInteger,
+    removeDuplicates
     ) where
 
 import qualified Data.List.Split as Split
@@ -116,3 +118,11 @@ insertWithList :: Ord k => (a -> a -> a) -> [k] -> a -> Map.Map k a -> Map.Map k
 insertWithList _ [] _ m = m
 insertWithList f (k:ks) v m = let newMap = Map.insertWith f k v m
                               in insertWithList f ks v newMap
+
+-- day 11
+
+readInteger :: String -> Integer
+readInteger = read
+
+removeDuplicates :: Ord a => [a] -> [a]
+removeDuplicates = Set.toList . Set.fromList
