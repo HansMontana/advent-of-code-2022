@@ -16,7 +16,8 @@ module Lib (
     printList,
     unique,
     times,
-    join
+    join,
+    foldlList
     ) where
 
 import qualified Data.List.Split as Split
@@ -92,3 +93,13 @@ times n f x = times (n-1) f (f x)
 
 join :: [a] -> [[a]] -> [a]
 join delimiter = foldr1 (\x y -> x ++ delimiter ++ y)
+
+-- day 10
+
+foldlList :: (b -> a -> b) -> b -> [a] -> [b]
+foldlList f start= reverse . foldlList' f [start]
+    where foldlList' :: (b -> a -> b) -> [b] -> [a] -> [b]
+          foldlList' f ys [] = ys
+          foldlList' f (y:ys) (x:xs) = let result = f y x
+                                           results = result:y:ys
+                                       in foldlList' f results xs

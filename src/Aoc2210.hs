@@ -29,14 +29,6 @@ apply states Noop = [last states]
 apply states (AddX y) = let (regX, addend) = last states
                         in [(regX + addend, y), (regX + y, 0)]
 
-foldlList :: (b -> a -> b) -> b -> [a] -> [b]
-foldlList f start= reverse . foldlList' f [start]
-    where foldlList' :: (b -> a -> b) -> [b] -> [a] -> [b]
-          foldlList' f ys [] = ys
-          foldlList' f (y:ys) (x:xs) = let result = f y x
-                                           results = result:y:ys
-                                       in foldlList' f results xs
-
 run :: [Instruction] -> [SystemState]                            
 run input = flatten $ foldlList apply [(startX, 0)] input
 
@@ -55,7 +47,7 @@ toPixels :: [Bool] -> String
 toPixels = map (\b -> if b then '#' else '.')
 
 draw :: String -> [String]
-draw s = reverse $ draw' [] s
+draw str = reverse $ draw' [] str
     where draw' :: [String] -> String -> [String]
           draw' ls [] = ls
           draw' ls s = let (x, y) = List.splitAt horizontalResolution s
