@@ -17,11 +17,14 @@ module Lib (
     unique,
     times,
     join,
-    foldlList
+    foldlList,
+    foldl1List,
+    insertWithList
     ) where
 
 import qualified Data.List.Split as Split
 import qualified Data.Set as Set
+import qualified Data.Map as Map
 
 -- Warning: pattern matching in this lib is not always exhaustive.
 -- day 1
@@ -97,9 +100,19 @@ join delimiter = foldr1 (\x y -> x ++ delimiter ++ y)
 -- day 10
 
 foldlList :: (b -> a -> b) -> b -> [a] -> [b]
-foldlList f start= reverse . foldlList' f [start]
+foldlList f start = reverse . foldlList' f [start]
     where foldlList' :: (b -> a -> b) -> [b] -> [a] -> [b]
           foldlList' f ys [] = ys
           foldlList' f (y:ys) (x:xs) = let result = f y x
                                            results = result:y:ys
                                        in foldlList' f results xs
+
+foldl1List :: (a -> a -> a) -> [a] -> [a]
+foldl1List f (l1:l2:ls) = foldlList f (f l1 l2) ls
+
+-- day 7
+
+insertWithList :: Ord k => (a -> a -> a) -> [k] -> a -> Map.Map k a -> Map.Map k a
+insertWithList _ [] _ m = m
+insertWithList f (k:ks) v m = let newMap = Map.insertWith f k v m
+                              in insertWithList f ks v newMap
