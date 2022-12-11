@@ -35,12 +35,6 @@ move = foldl moveStep
 walk :: [Dir] -> Coords
 walk = move (0, 0)
 
-trace :: ([a] -> Coords) -> [a] -> [Coords]
-trace f dirs = map f $ toPrefixes dirs
-
-toPrefixes :: [a]  ->[[a]]
-toPrefixes dirs = drop 1 $ mapWithIndex (flip take) $ replicate (length dirs) dirs ++ [dirs]
-
 touch :: Coords -> Coords -> Bool
 touch (x, y) (a, b) = abs (x - a) < 2 && abs (y - b) < 2
 

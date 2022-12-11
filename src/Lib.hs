@@ -17,6 +17,8 @@ module Lib (
     unique,
     times,
     join,
+    trace,
+    toPrefixes,
     foldlList,
     foldl1List,
     insertWithList,
@@ -98,6 +100,15 @@ times n f x = times (n-1) f (f x)
 
 join :: [a] -> [[a]] -> [a]
 join delimiter = foldr1 (\x y -> x ++ delimiter ++ y)
+
+-- day 9
+
+-- costly! because of recomputation
+trace :: ([a] -> b) -> [a] -> [b]
+trace f ls = map f $ toPrefixes ls
+
+toPrefixes :: [a] -> [[a]]
+toPrefixes ls = drop 1 $ mapWithIndex (flip take) $ replicate (length ls) ls ++ [ls]
 
 -- day 10
 
