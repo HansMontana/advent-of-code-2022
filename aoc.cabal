@@ -38,6 +38,7 @@ library
       Aoc2210
       Aoc2211A
       Aoc2211B
+      Aoc2212
       Lib
   other-modules:
       Paths_aoc
