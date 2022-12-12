@@ -13,14 +13,14 @@ data Monkey = Monkey [Item] Inspect Test Handled
 instance Show Monkey where
     show (Monkey items _ (divisor, _) handled) = show (items, handled, divisor)
 
--- Even though we don't feel relief anymore, we can build our own function using the lcp https://en.wikipedia.org/wiki/Least_common_multiple
+-- Even though we don't feel relief anymore, we can build our own function using the lcm https://en.wikipedia.org/wiki/Least_common_multiple
 -- of all divisors used by the monkeys to check where to toss the items to. Somehow these divisors are all primes, so we can just use
 -- the product of the set of them.
 reliefOp :: [Monkey] -> Item -> Item
-reliefOp ms item = mod item $ toLcp ms
+reliefOp ms item = mod item $ toLcm ms
 
-toLcp :: [Monkey] -> Int
-toLcp = product . removeDuplicates . map getDivisor
+toLcm :: [Monkey] -> Int
+toLcm = product . removeDuplicates . map getDivisor
 
 getDivisor :: Monkey -> Divisor
 getDivisor (Monkey _ _ (divisor, _) _) = divisor
