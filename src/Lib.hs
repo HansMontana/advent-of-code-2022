@@ -23,12 +23,15 @@ module Lib (
     foldl1List,
     insertWithList,
     readInteger,
-    removeDuplicates
+    removeDuplicates,
+    indexOf
     ) where
 
 import qualified Data.List.Split as Split
 import qualified Data.Set as Set
 import qualified Data.Map as Map
+import qualified Data.List.Extra as List
+import qualified Data.Maybe as Maybe
 
 -- Warning: pattern matching in this lib is not always exhaustive.
 -- day 1
@@ -137,3 +140,9 @@ readInteger = read
 
 removeDuplicates :: Ord a => [a] -> [a]
 removeDuplicates = Set.toList . Set.fromList
+
+-- day 13
+
+-- Causes runtime error if e not in ls
+indexOf :: Eq a => a -> [a] -> Int
+indexOf e ls = Maybe.fromJust $ List.elemIndex e ls

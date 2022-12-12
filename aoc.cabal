@@ -40,6 +40,7 @@ library
       Aoc2211B
       Aoc2212
       Aoc2212dijkstra
+      Aoc2213
       Lib
   other-modules:
       Paths_aoc
