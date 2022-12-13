@@ -97,7 +97,7 @@ unique = Set.size . Set.fromList
 
 times :: Int -> (a -> a) -> a -> a 
 times 0 _ x = x
-times n f x = times (n-1) f (f x)  
+times n f x = times (n - 1) f (f x)  
 
 -- day 7
 

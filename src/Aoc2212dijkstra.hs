@@ -3,7 +3,6 @@ module Aoc2212dijkstra (aoc2212dijkstra) where
 import Lib
 import qualified Data.List.Extra as List
 import qualified Data.Char as Char
-import qualified Data.Maybe as Maybe
 
 -- Part a -- 🚧 WIP (not done) Solve Day 12 less naively using Dijkstra's algorithm https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
 
@@ -18,6 +17,9 @@ type UnvisitedQueue = [Coords]
 data State = State HeightField DistanceField PreviousNodeField UnvisitedQueue Target deriving (Show)
 type Result = (DistanceField, PreviousNodeField)
 type Dir = Coords
+
+undef :: Coords
+undef = (minBound :: Int, minBound :: Int) -- any value not reachable on any field
 
 infinity :: Int
 infinity = maxBound :: Int
@@ -53,30 +55,41 @@ reachable fld cur next = let curVal = Char.ord $ valAt fld cur
 
 isInBounds :: HeightField -> Coords -> Bool
 isInBounds fld (x,y) = let ((lowX, lowY), (highX, highY)) = bounds fld
-                       in x>=lowX && x<highX && y>=lowY && y<highY
+                       in x >= lowX && x < highX && y >= lowY && y < highY
+
+initField :: [[a]] -> b -> [[b]]
+initField lss e = map (map (const e)) lss
+
+toCoordList :: [[a]] -> [Coords]
+toCoordList lss = let (_, (x, y)) = bounds lss
+                      xss = replicate y $ take x [0..]
+                      ys = take y [0..]
+                      coordField = map (\(xs, y) -> map (\x -> (x, y)) xs) $ zip xss ys
+                  in  flatten coordField
+
+-- TODO: set df at start coords to 0 here (,and do a pretty printer for the state, using ∞ for infinity and ⊥ for undefined)
+initialize :: (HeightField, Source, Target) -> State
+initialize (hf, s, t) = let df = initField hf infinity
+                            pnf = initField hf undef
+                            uq = toCoordList hf
+                        in State hf df pnf uq t
 
 aoc2212dijkstra :: IO ()
 aoc2212dijkstra = do 
     input <- readFile "./resources/input12test"
     -- This naive implementation does not work on the real input
     -- part a
-    print $ readInput $ splitIntoLines input
+    print $ initialize $ translate $ splitIntoLines input
 
--- translate :: [[Char]] -> State
--- translate = toState . readInput
-
--- toState :: (Field, Source, Target) -> State
--- toState (fld, start, dest) = State -- TODO
-
-readInput:: [[Char]] -> (HeightField, Source, Target)
-readInput chrs = let replaceLine = map (\c -> if c == 'S' then 'a' else (if c == 'E' then 'z' else c))
+translate:: [[Char]] -> (HeightField, Source, Target)
+translate chrs = let replaceLine = map (\c -> if c == 'S' then 'a' else (if c == 'E' then 'z' else c))
                      field = map replaceLine chrs
-                     start = Maybe.fromJust $ fieldElemIndex 'S' chrs
-                     dest = Maybe.fromJust $ fieldElemIndex 'E' chrs
+                     start = fieldElemIndex 'S' chrs
+                     dest = fieldElemIndex 'E' chrs
                  in (field, start, dest)
 
-fieldElemIndex :: Eq a => a -> [[a]] -> Maybe (Int, Int)
-fieldElemIndex e fld = let maybeVal = List.elemIndex e $ flatten fld
-                           ((_,_),(bound,_)) = bounds fld
+fieldElemIndex :: Eq a => a -> [[a]] -> (Int, Int)
+fieldElemIndex e fld = let linearIdx = indexOf e $ flatten fld
+                           (_,(bound,_)) = bounds fld
                            toCoords x = (x `mod` bound, x `div` bound)
-                       in fmap toCoords maybeVal
+                       in toCoords linearIdx
