@@ -24,7 +24,9 @@ module Lib (
     insertWithList,
     readInteger,
     removeDuplicates,
-    indexOf
+    indexOf,
+    fixFst,
+    fixSnd
     ) where
 
 import qualified Data.List.Split as Split
@@ -146,3 +148,11 @@ removeDuplicates = Set.toList . Set.fromList
 -- Causes runtime error if e not in ls
 indexOf :: Eq a => a -> [a] -> Int
 indexOf e ls = Maybe.fromJust $ List.elemIndex e ls
+
+-- day16
+
+fixFst :: a -> b -> (a, b)
+fixFst x y = (x, y)
+
+fixSnd :: a -> b -> (b, a)
+fixSnd x y = (y, x)
