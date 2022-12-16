@@ -26,7 +26,8 @@ module Lib (
     removeDuplicates,
     indexOf,
     fixFst,
-    fixSnd
+    fixSnd,
+    applyTimes
     ) where
 
 import qualified Data.List.Split as Split
@@ -84,7 +85,7 @@ mapTuple f (x, y) = (f x, f y)
 -- day 8
 
 flatten :: [[a]] -> [a]
-flatten = foldr1 (++)
+flatten = concat
 
 mapWithIndex :: (a -> Int -> b) -> [a] -> [b]
 mapWithIndex f ls = zipWith f ls [0..]
@@ -156,3 +157,9 @@ fixFst x y = (x, y)
 
 fixSnd :: a -> b -> (b, a)
 fixSnd x y = (y, x)
+
+-- day 17
+
+applyTimes :: (a -> a) -> Int -> a -> a
+applyTimes _ 0 x = x
+applyTimes f n x = applyTimes f (n -1) (f x)
