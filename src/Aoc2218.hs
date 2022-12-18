@@ -66,9 +66,12 @@ splitByFst ls = Map.toList $ splitByFst' Map.empty ls
 fill :: Ord a => Enum a => [(a, a, a)] -> [(a, a, a)]
 fill [] = []
 fill ls = let cubeXYZ = fillCube $ splitByFst3 ls
+              cubeXZY = map twist $ fillCube $ splitByFst3 (map twist ls)
               cubeYZX = map rotateRight $ fillCube $ splitByFst3 (map rotateLeft ls)
+              cubeYXZ = map (rotateRight . twist) $ fillCube $ splitByFst3 (map (twist . rotateLeft) ls)
               cubeZXY = map rotateLeft $ fillCube $ splitByFst3 (map rotateRight ls)
-          in cubeXYZ `List.intersect` cubeYZX `List.intersect` cubeZXY
+              cubeZYX = map (rotateLeft . twist) $ fillCube $ splitByFst3 (map (twist . rotateRight) ls)
+          in foldr1 List.intersect [cubeXYZ, cubeXZY, cubeYZX, cubeYXZ, cubeZXY, cubeZYX]
 
 splitByFst3 :: Ord a => [(a, a, a)] -> [(a, [(a, a)])]
 splitByFst3 ls = Map.toList $ splitByFst3' Map.empty ls
@@ -82,6 +85,9 @@ rotateLeft (x, y, z) = (y, z, x)
 rotateRight :: (a, b, c) -> (c, a, b)
 rotateRight (x, y, z) = (z, x, y)
 
+twist :: (a, b, c) -> (a, c, b)
+twist (x, y, z) = (x, z, y)
+
 solveB :: [Coord3] -> Int
 solveB = solveA . fill
 
@@ -89,14 +95,23 @@ solveB = solveA . fill
 
 aoc2218 :: IO ()
 aoc2218 = do 
-    input <- readFile "./resources/input18test"
-    input <- readFile "./resources/input18real"
+    input <- readFile "./resources/input18mine" -- minimalcube
+    input <- readFile "./resources/input18mine2" -- rect in x dir
+    -- input <- readFile "./resources/input18test"
+    -- input <- readFile "./resources/input18real"
     -- part a
     putStrLn "Part a:"
     print $ solveA $ translate $ readInput input
-    -- part b: first try 2582 is too low
+    -- part b: first try with 3 views 2582 is too low, second try with 6 views is still 2582
     putStrLn "\nPart b:"
     print $ solveB $ translate $ readInput input
+    putStrLn "\nsome testing"
+    print $ List.sort $ translate $ readInput input
+    putStrLn "\n"
+    print $ List.sort $ fill $ translate $ readInput input
+    putStrLn "\n"
+    -- real input: 1422 new elements
+    print $ (List.sort $ fill $ translate $ readInput input) List.\\ (List.sort $ translate $ readInput input)
 
 translate :: [[String]] -> [Coord3]
 translate = map (fromList . map readInt)
