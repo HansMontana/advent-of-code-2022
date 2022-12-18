@@ -34,17 +34,69 @@ pluckFromIndex n (l:ls) = combine l $ pluckFromIndex (n -1) ls
     where combine :: a -> (a, [a]) -> (a, [a])
           combine l (x, ls) = (x, l:ls)
 
--- solveA :: [Coord3] -> Int
+solveA :: [Coord3] -> Int
 solveA coords = sum $ map ((-) 6 . uncurry neighboringInList) $ zipWith pluckFromIndex [0..] $ replicate (length coords) coords
+
+-- Part b -- Assumption: Exactly one droplet is modelled
+
+-- fill :: [Coord3] -> [Coord3]
+-- fill cs = map fill
+
+fillLine :: Ord a => Enum a => a -> a -> [a]
+fillLine x y
+    | x == y = [x]
+    | x < y = [x..y]
+    | otherwise = [y..x]
+
+fillPlane :: Ord a => Enum a => [(a, [a])] -> [(a, a)]
+fillPlane [] = []
+fillPlane ((k, poss):ls) = zip (repeat k) (fillLine (minimum poss) (maximum poss)) ++ fillPlane ls
+
+fillCube :: Ord a => Enum a => [(a, [(a, a)])] -> [(a, a, a)]
+fillCube [] = []
+fillCube ((k, poss):ls) = let planeInput = splitByFst poss
+                          in  map (\x -> (k, fst x, snd x)) (fillPlane planeInput) ++ fillCube ls
+
+splitByFst :: Ord a => [(a , a)] -> [(a, [a])]
+splitByFst ls = Map.toList $ splitByFst' Map.empty ls
+    where splitByFst' :: Ord a => Map.Map a [a] -> [(a , a)] -> Map.Map a [a]
+          splitByFst' m [] = m
+          splitByFst' m ((k, v):ls) = splitByFst' (Map.insertWith (++) k [v] m) ls
+
+fill :: Ord a => Enum a => [(a, a, a)] -> [(a, a, a)]
+fill [] = []
+fill ls = let cubeXYZ = fillCube $ splitByFst3 ls
+              cubeYZX = map rotateRight $ fillCube $ splitByFst3 (map rotateLeft ls)
+              cubeZXY = map rotateLeft $ fillCube $ splitByFst3 (map rotateRight ls)
+          in cubeXYZ `List.intersect` cubeYZX `List.intersect` cubeZXY
+
+splitByFst3 :: Ord a => [(a, a, a)] -> [(a, [(a, a)])]
+splitByFst3 ls = Map.toList $ splitByFst3' Map.empty ls
+    where splitByFst3' :: Ord a => Map.Map a [(a, a)] -> [(a, a, a)] -> Map.Map a [(a, a)]
+          splitByFst3' m [] = m
+          splitByFst3' m ((k, x, y):ls) = splitByFst3' (Map.insertWith (++) k [(x,y)] m) ls
+
+rotateLeft :: (a, b, c) -> (b, c, a)
+rotateLeft (x, y, z) = (y, z, x)
+
+rotateRight :: (a, b, c) -> (c, a, b)
+rotateRight (x, y, z) = (z, x, y)
+
+solveB :: [Coord3] -> Int
+solveB = solveA . fill
+
+-----   
 
 aoc2218 :: IO ()
 aoc2218 = do 
     input <- readFile "./resources/input18test"
     input <- readFile "./resources/input18real"
     -- part a
+    putStrLn "Part a:"
     print $ solveA $ translate $ readInput input
-    -- putStrLn "\n"
-    -- print $ neighboringInList (2,2,2) [(1,2,2),(3,2,2),(2,1,2),(2,3,2),(2,2,1),(2,2,3),(2,2,4),(2,2,6),(1,2,5),(3,2,5),(2,1,5),(2,3,5)]
+    -- part b: first try 2582 is too low
+    putStrLn "\nPart b:"
+    print $ solveB $ translate $ readInput input
 
 translate :: [[String]] -> [Coord3]
 translate = map (fromList . map readInt)
