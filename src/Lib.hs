@@ -27,7 +27,8 @@ module Lib (
     indexOf,
     fixFst,
     fixSnd,
-    applyTimes
+    applyTimes,
+    whileDo
     ) where
 
 import qualified Data.List.Split as Split
@@ -163,3 +164,10 @@ fixSnd x y = (y, x)
 applyTimes :: (a -> a) -> Int -> a -> a
 applyTimes _ 0 x = x
 applyTimes f n x = applyTimes f (n -1) (f x)
+
+-- day 12 dijkstra
+
+whileDo :: (a -> Bool) -> (a -> a) -> a -> a
+whileDo condition f x
+    | not $ condition x = x
+    | otherwise = whileDo condition f (f x)

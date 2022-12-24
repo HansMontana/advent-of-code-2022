@@ -2,13 +2,6 @@ module Aoc2217 (aoc2217) where
 
 import Lib
 import qualified Data.List.Extra as List
-import qualified Data.Bifunctor as Bifunctor
-import qualified Data.Char as Char
-import qualified Data.List.Split as Split
-import qualified Data.Set as Set
-import qualified Data.Tree as Tree
-import qualified Data.Map as Map
-import qualified Data.Maybe as Maybe
 
 -- Types, Data Structures and Pretty Printing
 
@@ -19,7 +12,7 @@ shaftWidth = 7
 type Coords = (Int, Int)
 -- (distance from left wall, bottom relative to last rock)
 spawnPoint :: Coords
-spawnPoint = (2, 4)
+spawnPoint = (2, 3)
 
 type Dir = Coords
 left :: Dir
@@ -32,25 +25,20 @@ down = (0, 1)
 add :: Coords -> Coords -> Coords
 add (x, y) (a, b) = (x + a, y + b)
 
--- leftChr :: Char
--- leftChr = '<'
--- rightChr :: Char 
--- rightChr = '>'
--- downChr :: Char
--- downChr = 'v'
-
 currentPieceChr :: Char
 currentPieceChr = '@'
 errorChr :: Char
 errorChr = '?'
+rockChr :: Char
+rockChr = '#'
 
 type Rock = [[Char]]
 wideI :: Rock
 wideI = ["####"]
 cross :: Rock
 cross = [".#.", "###", ".#." ]
-waluigi :: Rock
-waluigi = [ "..#", "..#", "###" ]
+jay :: Rock
+jay = [ "..#", "..#", "###" ]
 tallI :: Rock
 tallI = ["#","#","#","#"]
 oh :: Rock
@@ -67,7 +55,11 @@ instance Show State where
                                                                    nextMove = "next move:\n" ++ [head moves]
                                                                    nextPiece = join "\n" ("next piece:" : head nexts)
                                                                    dropped = "dropped:\n" ++ show rocksDropped
-                                                               in join "\n\n" [shaftStr, nextMove, nextPiece, dropped]
+                                                                   towerHeight = "height of tower of rocks:\n" ++ show (heightOfRestingRocks shaft)
+                                                               in join "\n\n" [shaftStr, nextMove, nextPiece, dropped, towerHeight]
+
+getNumOfRocksDropped :: State -> RocksDropped
+getNumOfRocksDropped (State rd _ _ _ _) = rd
 
 toShaftWithCurrentPiece :: Shaft -> CurrentPiece -> Char -> Shaft
 toShaftWithCurrentPiece ls (r, (x, 0)) embedSymbol = let rockHeight = length r
@@ -84,7 +76,7 @@ embedIntoLine symbol pos rs (l:ls) = l : embedIntoLine symbol (pos - 1) rs ls
 
 combineSymbols :: Char -> Char -> Char -> Char
 combineSymbols _ '.' c = c
-combineSymbols s c '.' = s
+combineSymbols s _ '.' = s
 combineSymbols _ _ _ = errorChr
 
 --- Part a
@@ -92,11 +84,11 @@ combineSymbols _ _ _ = errorChr
 toState :: String -> State
 toState gasStreams = let rocksDropped = 0
                          (shaft, currentPiece) = toConfiguration [] (head endlessSupplyOfRocks)
-                         movements = addDownMoves gasStreams
+                         movements = concat $ repeat $ addDownMoves gasStreams
                          restRocks = tail endlessSupplyOfRocks
                     in State rocksDropped shaft currentPiece movements restRocks
 
-toConfiguration :: Shaft -> Rock -> (Shaft, CurrentPiece)
+toConfiguration :: Shaft -> Rock -> Configuration
 toConfiguration shaft rock = let shaftWithoutAir = dropWhileAir shaft
                                  rockHeight = length rock
                                  airBufferHeight = snd spawnPoint + rockHeight
@@ -110,37 +102,55 @@ dropWhileAir whole@(l:ls)
     | otherwise = dropWhileAir ls
 
 endlessSupplyOfRocks :: [Rock]
-endlessSupplyOfRocks = concat $ repeat [wideI, cross, waluigi, tallI, oh]
+endlessSupplyOfRocks = concat $ repeat [wideI, cross, jay, tallI, oh]
 
 addDownMoves :: [Char] -> [Char]
-addDownMoves ls = List.intersperse 'v' ls ++ repeat 'v'
+addDownMoves ls = List.intersperse 'v' ls ++ ['v']
 
 step :: State -> State
-step state@(State rocksDropped shaft currentPiece [] rocks) = state
-step (State rocksDropped shaft currentPiece ('<':dirs) rocks) = State rocksDropped shaft (moveLeft currentPiece) dirs rocks
-step state@(State rocksDropped shaft currentPiece ('>':dirs) rocks) = State rocksDropped shaft (moveRight currentPiece) dirs rocks
-step state@(State rocksDropped shaft currentPiece ('v':dirs) rocks) = state -- TODO moveDown (State rocksDropped shaft currentPiece dirs rocks)
+step state@(State _ _ _ [] _) = state
+step (State rocksDropped shaft currentPiece ('<':dirs) rocks) = State rocksDropped shaft (moveLeft currentPiece shaft) dirs rocks
+step (State rocksDropped shaft currentPiece ('>':dirs) rocks) = State rocksDropped shaft (moveRight currentPiece shaft) dirs rocks
+step (State rocksDropped shaft currentPiece ('v':dirs) rocks) = moveDown $ State rocksDropped shaft currentPiece dirs rocks
 
-moveLeft :: CurrentPiece -> CurrentPiece
-moveLeft (rocks, (0, y)) = (rocks, (0, y))
-moveLeft (rocks, pos) = (rocks, add pos left)
+moveLeft :: CurrentPiece -> Shaft -> CurrentPiece
+moveLeft current@(_, (0, _)) _ = current
+moveLeft current@(rocks, pos) shaft
+    | overlaps shaft (rocks, add pos left) = current
+    | otherwise = (rocks, add pos left)
 
-moveRight :: CurrentPiece -> CurrentPiece
-moveRight current@(r:rocks, pos@(x, y)) 
-    | length r + x < shaftWidth = (r:rocks, add pos right) 
+moveRight :: CurrentPiece -> Shaft -> CurrentPiece
+moveRight current@(r:rocks, pos@(x, _)) shaft
+    | overlaps shaft (r:rocks, add pos right) = current
+    | length r + x < shaftWidth = (r:rocks, add pos right)
     | otherwise = current
 
--- TODO
--- moveDown :: State -> State
--- moveDown (State rocksDropped shaft (r, (x, y)) dirs rocks)
---     | length r + y >= length shaft = toShaftWithCurrentPiece  
---     | otherwise = State rocksDropped shaft (r, (x, y) + down) dirs rocks
+moveDown :: State -> State
+moveDown state@(State rocksDropped shaft (r, (x, y)) dirs rocks)
+    | length r + y >= length shaft = restPieceAndPrepareNext state
+    | overlaps shaft (r, add (x, y) down) = restPieceAndPrepareNext state
+    | otherwise = State rocksDropped shaft (r, add (x, y) down) dirs rocks
 
----
+restPieceAndPrepareNext :: State -> State
+restPieceAndPrepareNext (State rocksDropped shaft current dirs rocks) = let rockRestedInShaft = toShaftWithCurrentPiece shaft current rockChr
+                                                                            (nextShaft, nextPiece) = toConfiguration rockRestedInShaft $ head rocks
+                                                                        in State (rocksDropped + 1) nextShaft nextPiece dirs (tail rocks)
+
+-- Reuse pretty printing functionality, even though there is room for performance improvements here
+overlaps :: Shaft -> CurrentPiece -> Bool
+overlaps shaft current = List.isInfixOf [errorChr] $ concat $ toShaftWithCurrentPiece shaft current rockChr
+
+heightOfRestingRocks :: Shaft -> Int
+heightOfRestingRocks = length . dropWhileAir
+
+simulate :: Int -> State -> State
+simulate rocksDropped = whileDo (\st -> getNumOfRocksDropped st < rocksDropped) step
 
 aoc2217 :: IO ()
 aoc2217 = do
-    input <- readFile "./resources/input17test"
-    -- input <- readFile "./resources/input17real"
+    -- input <- readFile "./resources/input17test"
+    input <- readFile "./resources/input17real"
     -- part a
-    print $ applyTimes step 2 $ toState input
+    print $ simulate 2022 $ toState input
+    -- part b --- not feasible until further optimization, the number of rocks dropped alone is bigger than the Int space
+    -- print $ simulate 1000000000000 $ toState input

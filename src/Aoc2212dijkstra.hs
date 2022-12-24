@@ -117,17 +117,12 @@ updateDistance u v df pnf = let alt = 1 + valAt df u
                                 newPnf = if smaller then replaceValAt v u pnf else pnf
                             in (newDf, newPnf)
 
-whileDo :: (a -> Bool) -> (a -> a) -> a -> a
-whileDo condition f x
-    | condition x = x
-    | otherwise = whileDo condition f (f x)
-
 isFinished :: State -> Bool
 isFinished (State _ _ _ [] _) = True
 isFinished (State _ df _ _ t) = valAt df t /= infinity
 
 dijkstra :: (HeightField, Source, Target) -> State
-dijkstra = whileDo isFinished step . initialize 
+dijkstra = whileDo (not . isFinished) step . initialize 
 
 shortestPath :: (HeightField, Source, Target) -> Int
 shortestPath input = let (State _ df _ _ t) = dijkstra input
